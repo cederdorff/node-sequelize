@@ -1,16 +1,18 @@
-import mysql from "mysql2"; // using mysql2 - installed npm library
+import { Sequelize } from "sequelize"; // using sequelize - installed npm library
 import "dotenv/config";
 
-// using the variables from the .env file
-// and creates the connection to database
-const connection = mysql.createConnection({
-    host: process.env.MYSQL_HOST,
-    port: process.env.MYSQL_PORT,
-    user: process.env.MYSQL_USER,
-    database: process.env.MYSQL_DATABASE,
-    password: process.env.MYSQL_PASSWORD,
-    multipleStatements: true
+// Setting up database connection - Passing parameters separately (other dialects)
+const sequelize = new Sequelize(process.env.MYSQL_DATABASE, process.env.MYSQL_USER, process.env.MYSQL_PASSWORD, {
+    host: "localhost",
+    dialect: "mysql" /* one of 'mysql' | 'postgres' | 'sqlite' | 'mariadb' | 'mssql' | 'db2' | 'snowflake' | 'oracle' */
 });
 
+try {
+    await sequelize.authenticate();
+    console.log("Connection has been established successfully.");
+} catch (error) {
+    console.error("Unable to connect to the database:", error);
+}
+
 // exports database connection
-export default connection;
+export default sequelize;
