@@ -17,7 +17,14 @@ const User = sequelize.define("user", {
         type: DataTypes.STRING,
         allowNull: false
     },
+    title: {
+        type: DataTypes.STRING
+    },
     mail: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    image: {
         type: DataTypes.STRING
     }
 });
@@ -30,93 +37,79 @@ console.log(User === sequelize.models.user); // true
 await sequelize.sync({ force: true });
 
 // ========== 3. Define Test Data =========== //
-const race = User.create({ name: "Rasmus Cederdorff", mail: "race@eaaa.dk" });
-console.log(race.id);
+User.create({
+    name: "Rasmus Cederdorff",
+    title: "Senior Lecturer",
+    mail: "race@eaaa.dk",
+    image: "https://share.cederdorff.com/images/race.jpg"
+});
+User.create({
+    name: "Anne Kirketerp",
+    title: "Head of Department",
+    mail: "anki@eaaa.dk",
+    image: "https://www.eaaa.dk/media/5buh1xeo/anne-kirketerp.jpg?width=800&height=450&rnd=133403878321500000"
+});
+
+User.create({
+    name: "Murat Kilic",
+    title: "Senior Lecturer",
+    mail: "mki@eaaa.dk",
+    image: "https://www.eaaa.dk/media/llyavasj/murat-kilic.jpg?width=800&height=450&rnd=133401946552600000"
+});
 
 // ========== 4. Routes  =========== //
 
-app.get("/", async (req, res) => {
+app.get("/", (request, response) => {
+    response.send("Node REST API Running 🎉");
+});
+
+app.get("/users", async (request, response) => {
     const users = await User.findAll();
     console.log(users);
 
-    res.json(users);
+    response.json(users);
 });
 
-// // READ all users
-// app.get("/users", (request, response) => {
-//     // sql query to select all from the table users
-//     const query = "SELECT * FROM users ORDER BY name;";
-//     connection.query(query, (error, results, fields) => {
-//         if (error) {
-//             console.log(error);
-//         } else {
-//             response.json(results);
-//         }
-//     });
-// });
+app.get("/users/:id", async (request, response) => {
+    const id = request.params.id;
+    const users = await User.findByPk(id);
 
-// // READ one user
-// app.get("/users/:id", (request, response) => {
-//     const id = request.params.id;
-//     const query = "SELECT * FROM users WHERE id=?;"; // sql query
-//     const values = [id];
+    response.json(users);
+});
 
-//     connection.query(query, values, (error, results, fields) => {
-//         if (error) {
-//             console.log(error);
-//         } else {
-//             response.json(results[0]);
-//         }
-//     });
-// });
+// CREATE user
+app.post("/users", async (request, response) => {
+    const user = request.body;
 
-// // CREATE user
-// app.post("/users", (request, response) => {
-//     const user = request.body;
-//     const query = "INSERT INTO users(name, mail, title, image) values(?,?,?,?);"; // sql query
-//     // const query = "INSERT INTO users SET name=?, mail=?, title=?, image=?;"; // sql query
-//     const values = [user.name, user.mail, user.title, user.image];
+    const newUser = await User.create(user);
+    response.json(newUser);
+});
 
-//     connection.query(query, values, (error, results, fields) => {
-//         if (error) {
-//             console.log(error);
-//         } else {
-//             response.json(results);
-//         }
-//     });
-// });
+// UPDATE user
+app.put("/users/:id", async (request, response) => {
+    const id = request.params.id;
+    const user = request.body;
 
-// // UPDATE user
-// app.put("/users/:id", (request, response) => {
-//     const id = request.params.id;
-//     const user = request.body;
-//     const query = "UPDATE users SET name=?, mail=?, title=?, image=? WHERE id=?;"; // sql query
-//     // const query = `UPDATE users SET name="${user.name}", mail="${user.mail}", title="${user.title}", image="${user.image}" WHERE id=${id};`; // sql query
-//     const values = [user.name, user.mail, user.title, user.image, id];
+    const [result] = await User.update(user, { where: { id: id } });
 
-//     connection.query(query, values, (error, results, fields) => {
-//         if (error) {
-//             console.log(error);
-//         } else {
-//             response.json(results);
-//         }
-//     });
-// });
+    if (result) {
+        response.json({ message: "User updated" });
+    } else {
+        response.json({ message: "User not found" });
+    }
+});
 
-// // DELETE user
-// app.delete("/users/:id", (request, response) => {
-//     const id = request.params.id; // tager id fra url'en, så det kan anvendes til at finde den givne bruger med "det" id.
-//     const query = "DELETE FROM users WHERE id=?;"; // sql query
-//     const values = [id];
+// DELETE user
+app.delete("/users/:id", async (request, response) => {
+    const id = request.params.id; // tager id fra url'en, så det kan anvendes til at finde den givne bruger med "det" id.
+    const result = await User.destroy({ where: { id: id } });
 
-//     connection.query(query, values, (error, results, fields) => {
-//         if (error) {
-//             console.log(error);
-//         } else {
-//             response.json(results);
-//         }
-//     });
-// });
+    if (result) {
+        response.json({ message: "User deleted" });
+    } else {
+        response.json({ message: "User not found" });
+    }
+});
 
 app.listen(port, () => {
     console.log(`App listening on port ${port}`);
