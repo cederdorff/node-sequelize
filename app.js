@@ -31,12 +31,12 @@ const User = sequelize.define("user", {
 
 console.log(User === sequelize.models.user); // true
 
-// ========== 2. Synchronize Models =========== //
+// ========== 2. Synchronize Models with Database =========== //
 
 // to automatically synchronize all models
 await sequelize.sync({ force: true });
 
-// ========== 3. Define Test Data =========== //
+// ========== 3. Create Test Data =========== //
 User.create({
     name: "Rasmus Cederdorff",
     title: "Senior Lecturer",
