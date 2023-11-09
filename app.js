@@ -5,24 +5,24 @@ import { DataTypes } from "sequelize";
 import sequelize from "./database.js";
 
 const app = express();
-const port = process.env.PORT || 3333;
+const port = process.env.PORT || 3000;
 
 app.use(express.json()); // to parse JSON bodies
 app.use(cors());
 
 // ========== 1. Define Models =========== //
 const User = sequelize.define("user", {
-    // Model attributes are defined here
+    // User model attributes
     name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false // Name is required
     },
     title: {
         type: DataTypes.STRING
     },
     mail: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false // Email is required
     },
     image: {
         type: DataTypes.STRING
@@ -34,15 +34,24 @@ console.log(User === sequelize.models.user); // true
 // ========== 2. Synchronize Models with Database =========== //
 
 // to automatically synchronize all models
+// For development/testing purposes only.
+// Drops and recreates tables.
 await sequelize.sync({ force: true });
 
 // ========== 3. Create Test Data =========== //
+
+// For development/testing purposes only.
+// Creates sample user data in the database.
+
+// Sample user 1
 User.create({
     name: "Rasmus Cederdorff",
     title: "Senior Lecturer",
     mail: "race@eaaa.dk",
     image: "https://share.cederdorff.com/images/race.jpg"
 });
+
+// Sample user 2
 User.create({
     name: "Anne Kirketerp",
     title: "Head of Department",
@@ -50,6 +59,7 @@ User.create({
     image: "https://www.eaaa.dk/media/5buh1xeo/anne-kirketerp.jpg?width=800&height=450&rnd=133403878321500000"
 });
 
+// Sample user 3
 User.create({
     name: "Murat Kilic",
     title: "Senior Lecturer",
@@ -59,17 +69,19 @@ User.create({
 
 // ========== 4. Routes  =========== //
 
+// READ - Root endpoint
 app.get("/", (request, response) => {
     response.send("Node REST API Running 🎉");
 });
 
+// READ all users
 app.get("/users", async (request, response) => {
     const users = await User.findAll();
-    console.log(users);
 
     response.json(users);
 });
 
+// READ one user by id
 app.get("/users/:id", async (request, response) => {
     const id = request.params.id;
     const users = await User.findByPk(id);
@@ -77,7 +89,7 @@ app.get("/users/:id", async (request, response) => {
     response.json(users);
 });
 
-// CREATE user
+// CREATE one user
 app.post("/users", async (request, response) => {
     const user = request.body;
 
@@ -85,7 +97,7 @@ app.post("/users", async (request, response) => {
     response.json(newUser);
 });
 
-// UPDATE user
+// UPDATE one user by id
 app.put("/users/:id", async (request, response) => {
     const id = request.params.id;
     const user = request.body;
@@ -99,7 +111,7 @@ app.put("/users/:id", async (request, response) => {
     }
 });
 
-// DELETE user
+// DELETE user by id
 app.delete("/users/:id", async (request, response) => {
     const id = request.params.id; // tager id fra url'en, så det kan anvendes til at finde den givne bruger med "det" id.
     const result = await User.destroy({ where: { id: id } });
@@ -111,8 +123,8 @@ app.delete("/users/:id", async (request, response) => {
     }
 });
 
+// ========== 5. Start Server  =========== //
+
 app.listen(port, () => {
-    console.log(`App listening on port ${port}`);
     console.log(`App listening on http://localhost:${port}`);
-    console.log(`Users Endpoint http://localhost:${port}/users`);
 });
