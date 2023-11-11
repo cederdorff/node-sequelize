@@ -42,8 +42,8 @@ const Post = sequelize.define("post", {
 
 // ========== 1.1 Define Associations =========== //
 // Define the association
-User.hasMany(Post); // One-to-many relationship between User and Post
-Post.belongsTo(User); // onDelete: "CASCADE" ensures that when a User is deleted, all associated Posts will be deleted as well
+User.belongsToMany(Post, { through: "postsUsers" }); // Many-to-many relationship between User and Post
+Post.belongsToMany(User, { through: "postsUsers" }); // Many-to-many relationship between Post and User
 
 // ========== 2. Synchronize Models with Database =========== //
 
@@ -86,21 +86,25 @@ const firstPost = await Post.create({
     image: "https://picsum.photos/800/450"
 });
 
-firstPost.setUser(rasmus);
+firstPost.addUser(rasmus);
+firstPost.addUser(anne);
 
 const secondPost = await Post.create({
     caption: "Second post",
     image: "https://picsum.photos/800/450"
 });
 
-secondPost.setUser(murat);
+secondPost.addUser(murat);
+secondPost.addUser(anne);
 
 const thirdPost = await Post.create({
     caption: "Third post",
     image: "https://picsum.photos/800/450"
 });
 
-thirdPost.setUser(rasmus);
+thirdPost.addUser(rasmus);
+thirdPost.addUser(murat);
+thirdPost.addUser(anne);
 
 // ========== 4. Routes  =========== //
 
