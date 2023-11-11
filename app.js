@@ -32,18 +32,19 @@ const User = sequelize.define("user", {
 const Post = sequelize.define("post", {
     // Post model attributes
     caption: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
         allowNull: false // Title is required
     },
     image: {
-        type: DataTypes.STRING
+        type: DataTypes.TEXT
     }
 });
 
 // ========== 1.1 Define Associations =========== //
 // Define the association
-// Post.belongsTo(User);
-Post.belongsTo(User, { onDelete: "CASCADE" }); // onDelete: "CASCADE" ensures that when a User is deleted, all associated Posts will be deleted as well
+User.hasMany(Post); // One-to-many relationship between User and Post
+Post.belongsTo(User); // onDelete: "CASCADE" ensures that when a User is deleted, all associated Posts will be deleted as well
+
 // ========== 2. Synchronize Models with Database =========== //
 
 // to automatically synchronize all models
@@ -93,6 +94,13 @@ const secondPost = await Post.create({
 });
 
 secondPost.setUser(murat);
+
+const thirdPost = await Post.create({
+    caption: "Third post",
+    image: "https://picsum.photos/800/450"
+});
+
+thirdPost.setUser(rasmus);
 
 // ========== 4. Routes  =========== //
 
@@ -154,6 +162,63 @@ app.get("/posts", async (request, response) => {
     const posts = await Post.findAll({ include: User });
 
     response.json(posts);
+});
+
+app.get("/posts/:id", async (request, response) => {
+    const id = request.params.id;
+    const posts = await Post.findByPk(id, { include: User });
+
+    response.json(posts);
+});
+
+app.get("/users/:id/posts", async (request, response) => {
+    const id = request.params.id;
+    const user = await User.findByPk(id, { include: Post });
+
+    response.json(user);
+});
+
+app.post("/users/:id/posts", async (request, response) => {
+    const id = request.params.id;
+    const post = request.body;
+
+    const user = await User.findByPk(id);
+
+    const newPost = await Post.create(post);
+    newPost.setUser(user);
+
+    response.json(newPost);
+});
+
+app.post("/posts", async (request, response) => {
+    const post = request.body;
+
+    const newPost = await Post.create(post);
+    response.json(newPost);
+});
+
+app.put("/posts/:id", async (request, response) => {
+    const id = request.params.id;
+    const post = request.body;
+
+    const [result] = await Post.update(post, { where: { id: id } });
+
+    if (result) {
+        response.json({ message: "Post updated" });
+    } else {
+        response.json({ message: "Post not found" });
+    }
+});
+
+app.delete("/posts/:id", async (request, response) => {
+    const id = request.params.id;
+    const result = await Post.destroy({ where: { id: id } });
+
+    if (result) {
+        response.json({ message: "Post deleted" });
+    } else {
+        response.json({ message: "Post not found" });
+    }
 });
 
 // ========== 5. Start Server  =========== //
