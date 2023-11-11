@@ -29,8 +29,21 @@ const User = sequelize.define("user", {
     }
 });
 
-console.log(User === sequelize.models.user); // true
+const Post = sequelize.define("post", {
+    // Post model attributes
+    caption: {
+        type: DataTypes.TEXT,
+        allowNull: false // Title is required
+    },
+    image: {
+        type: DataTypes.STRING
+    }
+});
 
+// ========== 1.1 Define Associations =========== //
+// Define the association
+// Post.belongsTo(User);
+Post.belongsTo(User, { onDelete: "CASCADE" }); // onDelete: "CASCADE" ensures that when a User is deleted, all associated Posts will be deleted as well
 // ========== 2. Synchronize Models with Database =========== //
 
 // to automatically synchronize all models
@@ -44,7 +57,7 @@ await sequelize.sync({ force: true });
 // Creates sample user data in the database.
 
 // Sample user 1
-User.create({
+const rasmus = await User.create({
     name: "Rasmus Cederdorff",
     title: "Senior Lecturer",
     mail: "race@eaaa.dk",
@@ -52,7 +65,7 @@ User.create({
 });
 
 // Sample user 2
-User.create({
+const anne = await User.create({
     name: "Anne Kirketerp",
     title: "Head of Department",
     mail: "anki@eaaa.dk",
@@ -60,12 +73,26 @@ User.create({
 });
 
 // Sample user 3
-User.create({
+const murat = await User.create({
     name: "Murat Kilic",
     title: "Senior Lecturer",
     mail: "mki@eaaa.dk",
     image: "https://www.eaaa.dk/media/llyavasj/murat-kilic.jpg?width=800&height=450&rnd=133401946552600000"
 });
+
+const firstPost = await Post.create({
+    caption: "First post",
+    image: "https://picsum.photos/800/450"
+});
+
+firstPost.setUser(rasmus);
+
+const secondPost = await Post.create({
+    caption: "Second post",
+    image: "https://picsum.photos/800/450"
+});
+
+secondPost.setUser(murat);
 
 // ========== 4. Routes  =========== //
 
@@ -121,6 +148,12 @@ app.delete("/users/:id", async (request, response) => {
     } else {
         response.json({ message: "User not found" });
     }
+});
+
+app.get("/posts", async (request, response) => {
+    const posts = await Post.findAll({ include: User });
+
+    response.json(posts);
 });
 
 // ========== 5. Start Server  =========== //
