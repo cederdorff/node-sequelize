@@ -11,6 +11,7 @@ app.use(express.json()); // to parse JSON bodies
 app.use(cors());
 
 // ========== 1. Define Models =========== //
+// Define user model
 const User = sequelize.define("user", {
     // User model attributes
     name: {
@@ -25,11 +26,9 @@ const User = sequelize.define("user", {
         allowNull: false // Email is required
     },
     image: {
-        type: DataTypes.STRING
+        type: DataTypes.TEXT // URL to image
     }
 });
-
-console.log(User === sequelize.models.user); // true
 
 // ========== 2. Synchronize Models with Database =========== //
 
@@ -43,6 +42,7 @@ await sequelize.sync({ force: true });
 // For development/testing purposes only.
 // Creates sample user data in the database.
 
+// Sample users
 // Sample user 1
 User.create({
     name: "Rasmus Cederdorff",
