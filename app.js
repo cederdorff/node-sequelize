@@ -194,6 +194,8 @@ app.post("/users/:id/posts", async (request, response) => {
 app.post("/posts", async (request, response) => {
     const post = request.body; // use request body as post object
     const newPost = await Post.create(post); // INSERT INTO posts (caption, image) VALUES (post.caption, post.image);
+    const user = await User.findByPk(post.userId); // SELECT * FROM users WHERE id = post.userId;
+    await newPost.setUser(user); // UPDATE posts SET userId = user.id WHERE id = newPost.id;
     response.json(newPost); // send the new post as JSON
 });
 
