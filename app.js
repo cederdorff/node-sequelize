@@ -76,50 +76,47 @@ app.get("/", (request, response) => {
 
 // READ all users
 app.get("/users", async (request, response) => {
-    const users = await User.findAll();
-
-    response.json(users);
+    const users = await User.findAll(); // SELECT * FROM users;
+    response.json(users); // send the users as JSON
 });
 
 // READ one user by id
 app.get("/users/:id", async (request, response) => {
-    const id = request.params.id;
-    const users = await User.findByPk(id);
-
-    response.json(users);
+    const id = request.params.id; // use id from url
+    const users = await User.findByPk(id); // SELECT * FROM users WHERE id = id;
+    response.json(users); // send the users as JSON
 });
 
 // CREATE one user
 app.post("/users", async (request, response) => {
-    const user = request.body;
-
-    const newUser = await User.create(user);
-    response.json(newUser);
+    const user = request.body; // use request body as user object
+    const newUser = await User.create(user); // INSERT INTO users (name, title, mail, image) VALUES (user.name, user.title, user.mail, user.image);
+    response.json(newUser); // send the new user as JSON
 });
 
 // UPDATE one user by id
 app.put("/users/:id", async (request, response) => {
-    const id = request.params.id;
-    const user = request.body;
+    const id = request.params.id; // use id from url
+    const user = request.body; // use request body as user object
 
-    const [result] = await User.update(user, { where: { id: id } });
+    const [result] = await User.update(user, { where: { id: id } }); // UPDATE users SET name = user.name, title = user.title, mail = user.mail, image = user.image WHERE id = id;
 
     if (result) {
-        response.json({ message: "User updated" });
+        response.json({ message: "User updated" }); // send a success message as JSON
     } else {
-        response.json({ message: "User not found" });
+        response.json({ message: "User not found" }); // send a not found message as JSON
     }
 });
 
 // DELETE user by id
 app.delete("/users/:id", async (request, response) => {
-    const id = request.params.id; // tager id fra url'en, så det kan anvendes til at finde den givne bruger med "det" id.
-    const result = await User.destroy({ where: { id: id } });
+    const id = request.params.id; // use id from url
+    const result = await User.destroy({ where: { id: id } }); // DELETE FROM users WHERE id = id;
 
     if (result) {
-        response.json({ message: "User deleted" });
+        response.json({ message: "User deleted" }); // send a success message as JSON
     } else {
-        response.json({ message: "User not found" });
+        response.json({ message: "User not found" }); // send a not found message as JSON
     }
 });
 
