@@ -8,9 +8,10 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json()); // to parse JSON bodies
-app.use(cors());
+app.use(cors()); // to allow Cross-origin resource sharing (CORS)
 
 // ========== 1. Define Models =========== //
+// Define user model
 const User = sequelize.define("user", {
     // User model attributes
     name: {
@@ -29,6 +30,7 @@ const User = sequelize.define("user", {
     }
 });
 
+// Define post model
 const Post = sequelize.define("post", {
     // Post model attributes
     caption: {
@@ -57,6 +59,7 @@ await sequelize.sync({ force: true });
 // For development/testing purposes only.
 // Creates sample user data in the database.
 
+// Sample users
 // Sample user 1
 const rasmus = await User.create({
     name: "Rasmus Cederdorff",
@@ -81,30 +84,33 @@ const murat = await User.create({
     image: "https://www.eaaa.dk/media/llyavasj/murat-kilic.jpg?width=800&height=450&rnd=133401946552600000"
 });
 
+// Sample posts
+// Sample post 1
 const firstPost = await Post.create({
     caption: "First post",
     image: "https://picsum.photos/800/450"
 });
 
-firstPost.addUser(rasmus);
-firstPost.addUser(anne);
-
+// Sample post 2
 const secondPost = await Post.create({
     caption: "Second post",
     image: "https://picsum.photos/800/450"
 });
 
-secondPost.addUser(murat);
-secondPost.addUser(anne);
-
+// Sample post 3
 const thirdPost = await Post.create({
     caption: "Third post",
     image: "https://picsum.photos/800/450"
 });
 
-thirdPost.addUser(rasmus);
-thirdPost.addUser(murat);
-thirdPost.addUser(anne);
+// Add users to posts (many-to-many relationships)
+firstPost.addUser(rasmus); // Add user 1 to post 1
+firstPost.addUser(anne); // Add user 2 to post 1
+secondPost.addUser(murat); // Add user 3 to post 2
+secondPost.addUser(anne); // Add user 2 to post 2
+thirdPost.addUser(rasmus); // Add user 1 to post 3
+thirdPost.addUser(murat); // Add user 3 to post 3
+thirdPost.addUser(anne); // Add user 2 to post 3
 
 // ========== 4. Routes  =========== //
 
