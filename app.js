@@ -192,7 +192,7 @@ app.post("/users/:id/posts", async (request, response) => {
     const user = await User.findByPk(id); // SELECT * FROM users WHERE id = id;
 
     const newPost = await Post.create(post); // INSERT INTO posts (caption, image) VALUES (post.caption, post.image);
-    newPost.setUser(user); // UPDATE posts SET userId = user.id WHERE id = newPost.id;
+    newPost.addUser(user); // UPDATE posts SET userId = user.id WHERE id = newPost.id;
     response.json(newPost); // send the new post as JSON
 });
 
@@ -200,6 +200,8 @@ app.post("/users/:id/posts", async (request, response) => {
 app.post("/posts", async (request, response) => {
     const post = request.body; // use request body as post object
     const newPost = await Post.create(post); // INSERT INTO posts (caption, image) VALUES (post.caption, post.image);
+    const user = await User.findByPk(post.userId); // SELECT * FROM users WHERE id = id;
+    newPost.addUser(user); // UPDATE posts SET userId = user.id WHERE id = newPost.id;
     response.json(newPost); // send the new post as JSON
 });
 
