@@ -26,7 +26,7 @@ const User = sequelize.define("user", {
         allowNull: false // Email is required
     },
     image: {
-        type: DataTypes.STRING
+        type: DataTypes.TEXT // URL to image
     }
 });
 
