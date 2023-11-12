@@ -38,7 +38,8 @@ const Post = sequelize.define("post", {
         allowNull: false // Title is required
     },
     image: {
-        type: DataTypes.TEXT
+        type: DataTypes.TEXT,
+        allowNull: false // Image is required
     }
 });
 
