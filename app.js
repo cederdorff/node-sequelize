@@ -8,9 +8,10 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json()); // to parse JSON bodies
-app.use(cors());
+app.use(cors()); // to allow Cross-origin resource sharing (CORS)
 
 // ========== 1. Define Models =========== //
+// Define user model
 const User = sequelize.define("user", {
     // User model attributes
     name: {
@@ -29,6 +30,7 @@ const User = sequelize.define("user", {
     }
 });
 
+// Define post model
 const Post = sequelize.define("post", {
     // Post model attributes
     caption: {
@@ -43,7 +45,7 @@ const Post = sequelize.define("post", {
 // ========== 1.1 Define Associations =========== //
 // Define the association
 User.hasMany(Post); // One-to-many relationship between User and Post
-Post.belongsTo(User); // onDelete: "CASCADE" ensures that when a User is deleted, all associated Posts will be deleted as well
+Post.belongsTo(User); // One-to-one relationship between Post and User'
 
 // ========== 2. Synchronize Models with Database =========== //
 
@@ -57,6 +59,7 @@ await sequelize.sync({ force: true });
 // For development/testing purposes only.
 // Creates sample user data in the database.
 
+// Sample users
 // Sample user 1
 const rasmus = await User.create({
     name: "Rasmus Cederdorff",
@@ -81,25 +84,25 @@ const murat = await User.create({
     image: "https://www.eaaa.dk/media/llyavasj/murat-kilic.jpg?width=800&height=450&rnd=133401946552600000"
 });
 
+// Sample posts
 const firstPost = await Post.create({
     caption: "First post",
     image: "https://picsum.photos/800/450"
 });
-
-firstPost.setUser(rasmus);
 
 const secondPost = await Post.create({
     caption: "Second post",
     image: "https://picsum.photos/800/450"
 });
 
-secondPost.setUser(murat);
-
 const thirdPost = await Post.create({
     caption: "Third post",
     image: "https://picsum.photos/800/450"
 });
 
+// Associate posts with users (set foreign key) - relationships
+firstPost.setUser(rasmus);
+secondPost.setUser(murat);
 thirdPost.setUser(rasmus);
 
 // ========== 4. Routes  =========== //
