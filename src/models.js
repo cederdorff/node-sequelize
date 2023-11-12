@@ -1,7 +1,8 @@
 import { DataTypes } from "sequelize";
 import sequelize from "./database.js";
 
-// ========== 1. Define Models =========== //
+// ========== Define Models =========== //
+// Define user model
 export const User = sequelize.define("user", {
     // User model attributes
     name: {
@@ -20,6 +21,7 @@ export const User = sequelize.define("user", {
     }
 });
 
+// Define post model
 export const Post = sequelize.define("post", {
     // Post model attributes
     caption: {
@@ -31,23 +33,24 @@ export const Post = sequelize.define("post", {
     }
 });
 
-// ========== 1.1 Define Associations =========== //
+// ========== Define Associations/ Relationships =========== //
 // Define the association
 User.belongsToMany(Post, { through: "postsUsers" }); // Many-to-many relationship between User and Post
 Post.belongsToMany(User, { through: "postsUsers" }); // Many-to-many relationship between Post and User
 
-// ========== 2. Synchronize Models with Database =========== //
+// ========== Synchronize Models with Database =========== //
 
 // to automatically synchronize all models
 // For development/testing purposes only.
 // Drops and recreates tables.
 await sequelize.sync({ force: true });
 
-// ========== 3. Create Test Data =========== //
+// ========== Create Test Data =========== //
 
 // For development/testing purposes only.
 // Creates sample user data in the database.
 
+// Sample users
 // Sample user 1
 const rasmus = await User.create({
     name: "Rasmus Cederdorff",
@@ -72,27 +75,30 @@ const murat = await User.create({
     image: "https://www.eaaa.dk/media/llyavasj/murat-kilic.jpg?width=800&height=450&rnd=133401946552600000"
 });
 
+// Sample posts
+// Sample post 1
 const firstPost = await Post.create({
     caption: "First post",
     image: "https://picsum.photos/800/450"
 });
 
-firstPost.addUser(rasmus);
-firstPost.addUser(anne);
-
+// Sample post 2
 const secondPost = await Post.create({
     caption: "Second post",
     image: "https://picsum.photos/800/450"
 });
 
-secondPost.addUser(murat);
-secondPost.addUser(anne);
-
+// Sample post 3
 const thirdPost = await Post.create({
     caption: "Third post",
     image: "https://picsum.photos/800/450"
 });
 
-thirdPost.addUser(rasmus);
-thirdPost.addUser(murat);
-thirdPost.addUser(anne);
+// Add users to posts (many-to-many relationships)
+firstPost.addUser(rasmus); // Add user 1 to post 1
+firstPost.addUser(anne); // Add user 2 to post 1
+secondPost.addUser(murat); // Add user 3 to post 2
+secondPost.addUser(anne); // Add user 2 to post 2
+thirdPost.addUser(rasmus); // Add user 1 to post 3
+thirdPost.addUser(murat); // Add user 3 to post 3
+thirdPost.addUser(anne); // Add user 2 to post 3
