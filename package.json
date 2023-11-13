@@ -1,5 +1,5 @@
 {
-    "name": "express-rest-users",
+    "name": "node-sequelize",
     "version": "1.0.0",
     "description": "Users REST API",
     "main": "app.js",
