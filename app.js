@@ -44,7 +44,7 @@ await sequelize.sync({ force: true });
 
 // Sample users
 // Sample user 1
-await User.create({
+const user1 = await User.create({
     name: "Rasmus Cederdorff",
     title: "Senior Lecturer",
     mail: "race@eaaa.dk",
@@ -52,7 +52,7 @@ await User.create({
 });
 
 // Sample user 2
-await User.create({
+const user2 = await User.create({
     name: "Anne Kirketerp",
     title: "Head of Department",
     mail: "anki@eaaa.dk",
@@ -60,7 +60,7 @@ await User.create({
 });
 
 // Sample user 3
-await User.create({
+const user3 = await User.create({
     name: "Murat Kilic",
     title: "Senior Lecturer",
     mail: "mki@eaaa.dk",
