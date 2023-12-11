@@ -98,9 +98,7 @@ app.post("/users", async (request, response) => {
 app.put("/users/:id", async (request, response) => {
     const id = request.params.id; // use id from url
     const user = request.body; // use request body as user object
-
     const [result] = await User.update(user, { where: { id: id } }); // UPDATE users SET name = user.name, title = user.title, mail = user.mail, image = user.image WHERE id = id;
-
     if (result) {
         response.json({ message: "User updated" }); // send a success message as JSON
     } else {
